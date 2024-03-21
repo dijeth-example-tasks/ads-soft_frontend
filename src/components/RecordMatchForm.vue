@@ -1,16 +1,6 @@
 <template>
-  <a-form
-    :model="formState"
-    name="basic"
-    autocomplete="off"
-    @finish="onFinish"
-    @finishFailed="onFinishFailed"
-  >
-    <a-form-item
-      v-for="({ key, value }, i) of formState.pairs"
-      :key="`${key}-${value}`"
-      style="display: flex"
-    >
+  <a-form :model="formState" name="basic" autocomplete="off" @finish="onFinish">
+    <a-form-item v-for="(_, i) of formState.pairs" :key="i" style="display: flex">
       <a-row :gutter="24" justify="center">
         <a-col>
           <a-form-item label="key" :name="`key${i}`">
@@ -38,7 +28,7 @@
 
     <a-row justify="center">
       <a-form-item>
-        <a-button type="primary" html-type="submit">Submit</a-button>
+        <a-button type="primary" html-type="submit">Match</a-button>
       </a-form-item>
     </a-row>
   </a-form>
@@ -50,11 +40,10 @@ interface FormState {
   pairs: { key: string; value: string }[]
 }
 
+const emit = defineEmits(['submit'])
+
 const formState = reactive<FormState>({
-  pairs: [
-    { key: 'deep', value: 'purple' },
-    { key: 'red', value: 'pink' }
-  ]
+  pairs: [{ key: 'white', value: 'black' }],
 })
 
 const addPair = () => {
@@ -65,11 +54,8 @@ const removePair = (index: number) => {
   formState.pairs = formState.pairs.filter((_, i) => i !== index)
 }
 
-const onFinish = (values: any) => {
-  console.log('Success:', values)
-}
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo)
+const onFinish = () => {
+  const data = formState.pairs.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {})
+  emit('submit', data)
 }
 </script>
